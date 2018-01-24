@@ -4,14 +4,45 @@
   <title>TinyApp</title>
   <h1><% include partials/_header.ejs %></h1>
 </head>
+<style>
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 50px;
+    }
+    
+    td, th {
+        /* border: 1px solid #dddddd; */
+        text-align: left;
+        padding: 8px;
+    }
+    </style>
 <body>
-    <a href="http://www.shorten.com">Click to shrink a URL!</a>
-  <ul>
-    <% for (const key in urlDatabase) { %>
-       <li><%= `Original URL: ${key} | TinyURL: ${urlDatabase[key]}` %></li>
-    <% } %>
-    </ul>
+
+    <table>
+        <tr>
+          <th>ShortURL</th>
+          <th>LongURL</th>
+        </tr>
+        <% for (const key in urlDatabase) { %>
+        <tr> 
+          <td>              
+            <%= `http://localhost:8080/${key}`%>
+          </td>
+          <td>
+            <%= urlDatabase[key] %>2
+          </td>
+          <td>
+            <form method="POST" action='/urls/<%=key%>/delete'><button type>Destroy</button></form>
+          </td>
+          <% } %>
+        </tr>
+        <tr>
+      </table>
+  
+    <a href="http://localhost:8080/urls/new">Click Me!</a>
 </body>
 </html>
 
 <!-- for (key in urlDabatase ) -->
+

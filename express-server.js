@@ -19,8 +19,14 @@ function generateRandomString(str) {
 const urlDatabase = {
    "b2xVn2": "http://lighthouselabs.ca",
    "9sm5xK": "http://www.google.com"
-
 };
+
+// function deleteURL(urlDatabase) {
+//   for (key in urlDatabase) {
+//     delete key;
+//   }
+// }
+
 // Create: GET
 
 app.get("/hello", (req, res) => {
@@ -47,16 +53,20 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[shortURL]
+  let longURL = urlDatabase[req.params.shortURL]
   res.redirect(longURL);
 });
 
 app.post("/urls", (req, res) => {
   var shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL
- console.log(shortURL)
- console.log(urlDatabase)
   res.redirect(`/urls/${shortURL}`);
+});
+
+
+app.post('/urls/:id/delete', (req, res) => {
+  delete urlDatabase[req.params.id];
+  res.redirect('/urls');
 });
 
 app.get("/urls.json", (req, res) => {

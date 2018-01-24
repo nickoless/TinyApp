@@ -5,10 +5,8 @@
   <h1><% include partials/_header.ejs %></h1>
 </head>
 <body>
-  <ul>
-   <p><%= shortURL %></p>
-   <p><%= longURL %></p>
-    </ul>
+   <li><%= longURL %></li>
+   <li><%= `localhost:8080/urls/${shortURL}` %></li>
 </body>
 </html>
 
