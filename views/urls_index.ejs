@@ -5,6 +5,13 @@
   <h1><% include partials/_header.ejs %></h1>
 </head>
 <body>
-    <p>Testing: 1, 2, 3!</p>
+    <a href="http://www.shorten.com">Click to shrink a URL!</a>
+  <ul>
+    <% for (const key in urlDatabase) { %>
+       <li><%= `Original URL: ${key} | TinyURL: ${urlDatabase[key]}` %></li>
+    <% } %>
+    </ul>
 </body>
 </html>
+
+<!-- for (key in urlDabatase ) -->
