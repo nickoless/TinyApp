@@ -1,10 +1,12 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const PORT = process.env.PORT || 8080; //default port 8080
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser())
 
 function generateRandomString(str) {
   let randomStr = "";
@@ -67,6 +69,15 @@ app.post("/urls/:id/update", (req, res) => {
 
 app.post('/urls/:id/delete', (req, res) => {
   delete urlDatabase[req.params.id];
+  res.redirect('/urls');
+});
+
+// Login
+
+app.post('/login', (req, res) => {
+  let value = req.body.username
+  console.log(value);
+  res.cookie('username', value);
   res.redirect('/urls');
 });
 
