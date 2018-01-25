@@ -1,5 +1,11 @@
+<% if (username) { %>
+  <p style = "font-family: arial, sans-serif"><%= `Hello, ${username}` %></p>
+  <form action="/logout" method="POST" style="margin:25px;">
+    <button type="submit" value="Logout">Logout</button>
+  </form> 
+<% } else { %>
 <form action="/login" method="POST" style="margin:25px;">
-  <!-- <label for="longURL"></label> -->
   <input id="username" type="text" name="username" placeholder="Your name here" style="width: 300px">
   <input type="submit" value="Register">
 </form> 
+<%  } %>

@@ -1,22 +1,23 @@
 <!DOCTYPE html>
+
 <html lang="en">
-<head>
-  <title>TinyApp</title>
-  <h1><% include partials/_header.ejs %></h1>
-</head>
-<style>
-    table {
-        font-family: arial, sans-serif;
-        border-collapse: collapse;
-        width: 50px;
-    }
-    
-    td, th {
-        /* border: 1px solid #dddddd; */
-        text-align: left;
-        padding: 8px;
-    }
-    </style>
+  <head>
+    <title>TinyApp</title>
+    <h1><% include partials/_header.ejs %></h1>
+  </head>
+  <style>
+      table {
+          font-family: arial, sans-serif;
+          border-collapse: collapse;
+          width: 50px;
+      }
+      
+      td, th {
+          /* border: 1px solid #dddddd; */
+          text-align: left;
+          padding: 8px;
+      }
+      </style>
 <body>
 
     <table>
@@ -30,7 +31,7 @@
             <%= `http://localhost:8080/urls/${key}`%>
           </td>
           <td>
-            <%= urlDatabase[key] %>2
+            <%= urlDatabase[key] %>
           </td>
           <td>
             <form method="POST" action='/urls/<%=key%>/delete'><button type>Destroy</button></form>
@@ -39,8 +40,8 @@
         </tr>
         <tr>
       </table>
-  
-    <a href="http://localhost:8080/urls/new">Click Me!</a>
+      <p><br></p>
+    <a href="http://localhost:8080/urls/new">Shrink URL</a>
 </body>
 </html>
 

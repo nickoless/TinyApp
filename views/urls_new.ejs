@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 
 <html lang="en">
-  <head></head>
-  <body style="font-size:20px; padding:50px;">
-    <% include partials/_header %>
-    <p>...</p>
-    <form action="/urls" method="POST" style="margin:150px;">
+  <head>
+    <title>TinyApp</title>
+    <h1><% include partials/_header.ejs %></h1>
+  </head>
+
+    <p style = "font-family: arial, sans-serif"> Touch it, bring it, pay it, watch it, turn it, leave it, stop, format it.</p>
+    <form action="/urls" method="POST" style="margin:25px;">
       <label for="longURL">Enter a URL:</label>
       <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
       <input type="submit" value="Submit">
