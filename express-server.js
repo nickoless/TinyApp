@@ -21,14 +21,6 @@ const urlDatabase = {
    "9sm5xK": "http://www.google.com"
 };
 
-// function deleteURL(urlDatabase) {
-//   for (key in urlDatabase) {
-//     delete key;
-//   }
-// }
-
-// Create: GET
-
 app.get("/hello", (req, res) => {
   res.end("<html><body>Hello <b>World</b></body></html>\n");
 });
@@ -47,8 +39,7 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   let shortURL = req.params.id;
-  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[shortURL]
-   };
+  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[shortURL] };
   res.render("urls_show", templateVars);
 });
 
@@ -63,6 +54,16 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
+// Edit URL
+
+app.post("/urls/:id/update", (req, res) => {
+  let shortURL = req.params.id;
+  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[shortURL] };
+  urlDatabase[shortURL] = req.body.longURL
+  res.redirect("/urls");
+});
+
+// Delete URL
 
 app.post('/urls/:id/delete', (req, res) => {
   delete urlDatabase[req.params.id];
