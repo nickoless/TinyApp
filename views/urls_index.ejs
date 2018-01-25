@@ -28,10 +28,13 @@
         <% for (const key in urlDatabase) { %>
         <tr> 
           <td>              
-            <%= `http://localhost:8080/urls/${key}`%>
+            <%=key%>
           </td>
           <td>
             <%= urlDatabase[key] %>
+          </td>         
+          <td>
+           <a href= "<%= `http://localhost:8080/urls/${key}` %>">Edit</a>
           </td>
           <td>
             <form method="POST" action='/urls/<%=key%>/delete'><button type>Destroy</button></form>
