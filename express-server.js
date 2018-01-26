@@ -28,8 +28,8 @@ const urlDatabase = {
 const users = {
   "userRandomID": {
     id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    email: "a@a",
+    password: "asd"
   },
   "user2RandomID": {
     id: "user2RandomID",
@@ -38,24 +38,24 @@ const users = {
   }
 };
 
-// app.get("/hello", (req, res) => {
-//   res.end("<html><body>Hello <b>World</b></body></html>\n");
-// });
+app.get("/hello", (req, res) => {
+  res.end("<html><body>Hello <b>World</b></body></html>\n");
+});
 
-// app.get("/", (req, res) => {
-//   res.end("Hello!");
-// });
+app.get("/", (req, res) => {
+  res.end("Hello!");
+});
 
 // URLS
 
 app.get("/urls", (req, res) => {
   res.render("urls_index", {
     urlDatabase: urlDatabase,
-    username: req.cookies["user_id"]});
+    users: req.cookies["user_id"]});
 });
 
 app.get("/urls/new", (req, res) => {
-  let theCookie = { username: req.cookies["user_id"]
+  let theCookie = { users: req.cookies["user_id"]
   };
   res.render("urls_new", theCookie);
 });
@@ -65,7 +65,7 @@ app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[shortURL],
-    username: req.cookies["user_id"]
+    users: req.cookies["user_id"]
   };
   res.render("urls_show", templateVars);
 });
@@ -102,7 +102,7 @@ app.post('/urls/:id/delete', (req, res) => {
 // Cookies
 
 app.post("login", (req, res) => {
-  let name = req.body.username;
+  let name = req.body.users;
   res.cookie("user_id", name);
   res.redirect("/urls");
 });
@@ -110,41 +110,51 @@ app.post("login", (req, res) => {
 // Login
 
 app.get("/login", (req, res) => {
-  res.render("login_page")
+  res.render("login_page");
+});
+
+app.post("/login", (req, res) => {
+  function getUserByEmail(email) {
+    for (let key in users) {
+      const user = users[key];
+      if (user.email === email) {
+        return user;
+      }
+    }
+  } 
+  function passCheck(user, password) {
+    return user.password === password;
+  }
+  const user = getUserByEmail(req.body.email);
+  if (user && passCheck(user, req.body.password)) {
+    res.cookie("user_id", user.id);
+    res.redirect("/")
+  } else {
+    res.status(403);
+    res.send("Incorrect password!");
+  }
+
 });
 
 // Logout
 
 app.post('/logout', (req, res) => {
-  let value = req.body.username;
+  let value = req.body.users;
   res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
-// Add form information to users (database)
+// Register
 
 app.get("/register", (req, res) => {
   res.render("urls_register");
 });
 
-// function UserExists(email) {
-//   for (let key in users) {
-//     const user = users[key];
-//     if (user.email === email) {;
-//       return true;
-//     }
-//   }
-//   return false;
-// }
-
 app.post("/register", (req, res) => {
-
   function UserExists(email) {
     for (let key in users) {
       const user = users[key];
       if (user.email === email) {
-        console.log(user.email);
-        console.log(email);
         return user;
       }
     }
@@ -152,11 +162,10 @@ app.post("/register", (req, res) => {
   }
   if (req.body.email === "" || req.body.password === "") {
     res.status(400);
-    res.send("You shall not pass (until both an email and password have been entered).");
+    res.send("Please enter a users and password.");
   } else if (UserExists(req.body.email)) {
     res.status(400);
-    res.send("Note: Storing users' passwords like this is very, very bad. Don't worry though, we'll fix this issue in a later exercise!");
-    console.log(UserExists(req.body.email))
+    res.send("Email already exists in database");
   } else {
     let newUser = generateRandomString();
     users[newUser] = {
@@ -166,9 +175,8 @@ app.post("/register", (req, res) => {
     };
     res.cookie("user_id", newUser);
     res.redirect("/urls");
-    console.log(users)
   }
- });
+});
 
 
 // Other
@@ -180,7 +188,3 @@ app.get("/urls.json", (req, res) => {
 app.listen(PORT, () => {
   console.log(`TinyApp listening on port ${PORT}!`);
 });
-
-
-// redirecting
-// req.body.longURL

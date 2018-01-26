@@ -1,16 +1,8 @@
-<% if (username) { %>
-  <p style = "font-family: arial, sans-serif"><%= `Hello, ${username}` %></p>
-  <form action="/logout" method="POST" style="margin:25px;">
-    <button type="submit" value="Logout">Logout</button>
-  </form> 
-<% } else { %>
+<!DOCTYPE html>
 <form action="/login" method="POST" style="margin:25px;">
-  <input id="user_id" type="text" name="user_id" placeholder="Your name here" style="width: 300px">
-  <input type="submit" value="That's my name">
-</form> 
-<%  } %>
-
-<form action="/login" method="POST" style="margin:25px;">
+  <h2 style = "font-family: arial, sans-serif">
+    Please login
+  </h2>
   <p>
     <label>Name
       <input  action="/login" method="POST" type=email name=email>
@@ -25,3 +17,5 @@
     <input type="submit" value="Register">
   </p>
 </form>
+
+
