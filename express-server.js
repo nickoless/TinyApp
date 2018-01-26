@@ -21,8 +21,16 @@ function generateRandomString(str) {
 // ----------------------------------------
 
 const urlDatabase = {
-  "b2xVn2": "http://lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    shortURL: "b2xVn2",
+    userid: "userRandomID"
+  }
+  "9sm5xK": {
+    longURL: "http://www.google.ca"
+    shortURL: "9sm5xK"
+    userid: "user2RandomID"
+  }
 };
 
 const users = {
@@ -55,9 +63,13 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let theCookie = { users: req.cookies["user_id"]
-  };
-  res.render("urls_new", theCookie);
+  let hasCookie = { 
+    user: req.cookies.user_id }  
+  if (req.cookies.user_id in users) { // hasCookie -------------------------
+    res.render("urls_new", hasCookie);
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.get("/urls/:id", (req, res) => {

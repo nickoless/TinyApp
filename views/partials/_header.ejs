@@ -1,7 +1,5 @@
-<!DOCTYPE html>
-
-<% if (users) { %>
-  <p style = "font-family: arial, sans-serif"><%= `Hello, ${users}` %></p>
+<% if (user) { %>
+  <p style = "font-family: arial, sans-serif"><%= `Hello, ${user}` %></p>
   <form action="/logout" method="POST" style="margin:25px;">
     <button type="submit" value="Logout">Logout</button>
   </form> 
