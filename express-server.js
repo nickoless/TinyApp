@@ -74,21 +74,17 @@ app.get("/", (req, res) => {
     // Main URLS page
 
 app.get("/urls", (req, res) => {
-let hasCookie = {
-    user: req.cookies.user_id };
 if (req.cookies.user_id in users) {
     res.render("urls_index", { 
     urlDatabase: urlDatabase,
     user: req.cookies.user_id
-  })
-  console.log(user)
-  console.log(urlDatabase)
+  });
 } else {
   res.send('<script>alert("Please login to continue")</script>')
 }
 });
 
-    // New URL
+    // new URL
 
 app.get("/urls/new", (req, res) => {
   let hasCookie = {
@@ -100,6 +96,26 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
+        // Add URL to urlDatabase
+
+app.post("/urls", (req, res) => {
+  let shortURL = generateRandomString();
+  urlDatabase[shortURL] = { 
+    longURL: req.body.longURL,
+    shortURL: shortURL,
+    userid: shortURL
+   };
+   console.log(urlDatabase)
+  res.redirect(`/urls/${shortURL}`);
+});
+    
+    // Short URL redirect
+
+app.get("/:id", (req, res) => {
+  console.log(urlDatabase[req.params.id].longURL)
+  res.redirect(urlDatabase[req.params.id].longURL);
+});
+
     // Show URL
     
 app.get("/urls/:id", (req, res) => {
@@ -108,22 +124,19 @@ app.get("/urls/:id", (req, res) => {
     shortURL: req.params.id,
     user: urlDatabase["user_id"]
   }; 
-  res.render("urls_show", templateVars);
+  if (req.cookies.user_id in users) {
+    res.render("urls_show", templateVars);
+  } else {
+    res.redirect("/login");
+  }
 }); 
+
 
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
 
-    // Add URL to urlDatabase, New URL
-
-app.post("/urls", (req, res) => {
-  let shortURL = generateRandomString();
-  urlDatabase[req.params.id].longURL = req.body.longURL;
-  res.redirect(`/urls/${shortURL}`);
-  console.log(urlDatabase)
-});
 
     // Edit URL
 
@@ -156,8 +169,6 @@ app.post('/urls/:id/delete', (req, res) => {
     res.send("403: Permission denied")
   }  
 });
-
-
 
 // Login
 
