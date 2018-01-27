@@ -8,6 +8,8 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
+// ----------------------------------------
+
 function generateRandomString(str) {
   let randomStr = "";
   const char = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
@@ -18,6 +20,19 @@ function generateRandomString(str) {
   return randomStr;
 }
 
+function getUserByEmail(email) {
+  for (let key in users) {
+    const user = users[key];
+    if (user.email === email) {
+      return user;
+    }
+  }
+}
+
+function passCheck(user, password) {
+  return user.password === password;
+}
+
 // ----------------------------------------
 
 const urlDatabase = {
@@ -25,10 +40,10 @@ const urlDatabase = {
     longURL: "http://www.lighthouselabs.ca",
     shortURL: "b2xVn2",
     userid: "userRandomID"
-  }
+  },
   "9sm5xK": {
-    longURL: "http://www.google.ca"
-    shortURL: "9sm5xK"
+    longURL: "http://www.google.ca",
+    shortURL: "9sm5xK",
     userid: "user2RandomID"
   }
 };
@@ -57,15 +72,28 @@ app.get("/", (req, res) => {
 // URLS
 
 app.get("/urls", (req, res) => {
+
   res.render("urls_index", {
     urlDatabase: urlDatabase,
-    users: req.cookies["user_id"]});
+    user: req.cookies["user_id"]});
 });
 
+
+// let dataID = urlDatabase[req.params.id].userid
+// let loggedIn = req.cookies.user_id;
+
+// if (dataID === loggedIn) {
+//   res.redirect("/urls");
+// } else {
+//   res.status(403)
+//   res.send("403: Permission denied")
+// }  
+
+
 app.get("/urls/new", (req, res) => {
-  let hasCookie = { 
-    user: req.cookies.user_id }  
-  if (req.cookies.user_id in users) { // hasCookie -------------------------
+  let hasCookie = {
+    user: req.cookies.user_id };
+  if (req.cookies.user_id in users) {
     res.render("urls_new", hasCookie);
   } else {
     res.redirect("/login");
@@ -73,12 +101,11 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  let shortURL = req.params.id;
   let templateVars = {
+    longURL: urlDatabase[req.params.id].longURL,
     shortURL: req.params.id,
-    longURL: urlDatabase[shortURL],
-    users: req.cookies["user_id"]
-  };
+    user: urlDatabase["user_id"]
+  }; 
   res.render("urls_show", templateVars);
 });
 
@@ -87,31 +114,50 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-// Add URL  to urlDatabase
+// Add URL to urlDatabase, New URL
 
 app.post("/urls", (req, res) => {
-  var shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
+  let shortURL = generateRandomString();
+  urlDatabase[req.params.id].longURL = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
+  console.log(urlDatabase)
 });
 
 // Edit URL
 
 app.post("/urls/:id/update", (req, res) => {
-  let shortURL = req.params.id;
-  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[shortURL] };
-  urlDatabase[shortURL] = req.body.longURL;
+  let dataID = urlDatabase[req.params.id].userid
+  let loggedIn = req.cookies.user_id;
+  if (dataID === loggedIn) {
+    res.redirect("/urls");
+  } else {
+    res.status(403)
+    res.send("403: Permission denied")
+  }    
+  let templateVars = { 
+    shortURL: req.params.id,
+    longURL: urlDatabase[req.params.id].longURL };
+    urlDatabase[req.params.id].longURL = req.body.longURL;
+
+
   res.redirect("/urls");
 });
 
 // Delete URL
 
 app.post('/urls/:id/delete', (req, res) => {
-  delete urlDatabase[req.params.id];
-  res.redirect("/urls");
-});
 
-// Cookies
+  let dataID = urlDatabase[req.params.id].userid
+  let loggedIn = req.cookies.user_id;
+
+  if (dataID === loggedIn) {
+    delete urlDatabase[req.params.id];
+    res.redirect("/urls");
+  } else {
+    res.status(403)
+    res.send("403: Permission denied")
+  }  
+});
 
 app.post("login", (req, res) => {
   let name = req.body.users;
@@ -126,26 +172,14 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  function getUserByEmail(email) {
-    for (let key in users) {
-      const user = users[key];
-      if (user.email === email) {
-        return user;
-      }
-    }
-  } 
-  function passCheck(user, password) {
-    return user.password === password;
-  }
   const user = getUserByEmail(req.body.email);
   if (user && passCheck(user, req.body.password)) {
     res.cookie("user_id", user.id);
-    res.redirect("/")
+    res.redirect("/");
   } else {
     res.status(403);
     res.send("Incorrect password!");
   }
-
 });
 
 // Logout
@@ -163,19 +197,10 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  function UserExists(email) {
-    for (let key in users) {
-      const user = users[key];
-      if (user.email === email) {
-        return user;
-      }
-    }
-    return false;
-  }
   if (req.body.email === "" || req.body.password === "") {
     res.status(400);
     res.send("Please enter a users and password.");
-  } else if (UserExists(req.body.email)) {
+  } else if (getUserByEmail(req.body.email)) {
     res.status(400);
     res.send("Email already exists in database");
   } else {
@@ -190,7 +215,6 @@ app.post("/register", (req, res) => {
   }
 });
 
-
 // Other
 
 app.get("/urls.json", (req, res) => {
@@ -200,3 +224,7 @@ app.get("/urls.json", (req, res) => {
 app.listen(PORT, () => {
   console.log(`TinyApp listening on port ${PORT}!`);
 });
+
+
+//clear cookie = req session ... user id = null
+// remove res clear cookie
