@@ -25,23 +25,26 @@
           <th>ShortURL</th>
           <th>LongURL</th>
         </tr>
-        <% for (const key in urlDatabase) { %>
+        <% if (user) { %>
+          <% for (const key in urlDatabase) { %>
+            <% if (urlDatabase[key].userid === user) { %>
         <tr> 
-          <td>              
+          <td>
             <%=urlDatabase[key]["shortURL"]%>
           </td>
           <td>
             <%= urlDatabase[key]["longURL"] %>
-          </td>         
+          </td>   
           <td>
-           <a href= "<%= `http://localhost:8080/urls/${key}` %>">Edit</a>
+            <a href= "<%= `http://localhost:8080/urls/${key}` %>">Edit</a>
           </td>
           <td>
             <form method="POST" action="/urls/<%=key%>/delete"><button type>Delete</button></form>
           </td>
-          <% } %>
-        </tr>
-        <tr>
+              <% } %>
+            <% } %>
+          <% }; %>
+          </tr>
       </table>
       <p><br></p>
     <a href="http://localhost:8080/urls/new">Shrink URL</a>
