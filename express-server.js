@@ -71,10 +71,6 @@ const users = {
   }
 };
 
-app.get("/hello", (req, res) => {
-  res.end("<html><body>Hello <b>World</b></body></html>\n");
-});
-
 app.get("/", (req, res) => {
   if (req.session.user_id in users) {
     res.redirect("/urls");
@@ -85,7 +81,7 @@ app.get("/", (req, res) => {
 
 // URLS
 
-    // Main URLS page
+    // Index URL
 
 app.get("/urls", (req, res) => {
   if (req.session.user_id in users) {
@@ -101,7 +97,7 @@ app.get("/urls", (req, res) => {
   res.send("401: Please login")
 });
 
-    // new URL
+    // New URL
 
 app.get("/urls/new", (req, res) => {
   if (req.session.user_id in users) {
@@ -117,8 +113,6 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
-    // Add URL to urlDatabase
-
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = { 
@@ -129,11 +123,17 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
     
-    // Short URL redirect
+    // Redirect URL
 
-// app.get("/:shortURL", (req, res) => {
-//   res.redirect(urlDatabase[req.params.shortURL].longURL);
-// });
+app.get("/u/:id", (req, res) => {
+  if (req.params.id in urlDatabase) {
+    let longURL = urlDatabase[req.params.id].longURL;
+    res.redirect(longURL);
+  } else {
+    res.status(404);
+    res.send("404: This TinyApp URL does not exist");
+  }
+});
 
     // Show URL
     
@@ -153,12 +153,6 @@ app.get("/urls/:id", (req, res) => {
     res.send("401: Please login");
   }
 }); 
-
-app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
-});
-
 
     // Edit URL
 
@@ -219,7 +213,6 @@ app.post("/login", (req, res) => {
 // Logout
 
 app.post('/logout', (req, res) => {
-  let value = req.body.users;
   req.session.user_id = null;
   res.redirect("/urls");
 });
