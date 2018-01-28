@@ -19,8 +19,8 @@
       </style>
   <body>
     <h1>TinyApp</h1>
-    <% if (user) { %>
     <table>
+        <% if (user) { %>
       <tr>
         <th>ShortURL</th>
         <th>LongURL</th>
@@ -33,16 +33,18 @@
         <td><a href= "<%= `http://localhost:8080/urls/${key}` %>">Edit</a></td>
         <td><form method="POST" action="/urls/<%=key%>/delete"><button type>Delete</button></form></td>
       </tr>
+      <% } %>
+      <% } %>
+      <% } else { %>
+        <td>
+          <tr>Please login or register to continue</tr>
+        </td>
+    <% }; %>
       </table>
       <p><br></p>
       <form action="/urls/new">
         <button>Shrink URL</button>
       </form>
-        <% } %>
-      <% } %>
-    <% }; %>
   </body>
 </html>
-
-<!-- for (key in urlDabatase ) -->
 

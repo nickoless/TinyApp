@@ -45,7 +45,6 @@ function passCheck(user, password) {
 const urlDatabase = {
   "b2xVn2": {
     longURL: "http://www.lighthouselabs.ca",
-
     shortURL: "b2xVn2",
     userid: "userRandomID"
   },
@@ -83,17 +82,18 @@ app.get("/", (req, res) => {
 
 app.get("/urls", (req, res) => {
   if (req.session.user_id in users) {
-    let templateVars = {
-      urlDatabase: urlDatabase,
-      users: users,
-      user: req.session.user_id,
-      email: users[req.session.user_id].email
-    };
+  let templateVars = {
+    urlDatabase: urlDatabase,
+    users: users,
+    user: req.session.user_id,
+    email: users[req.session.user_id].email
+  };
     res.render("urls_index", templateVars);
-  } else { 
-    res.status(401);
-    res.send("401: Please login");
-   }   
+  } else {
+    res.render("urls_index", {
+      user: req.session.user_id
+    });
+   }
 });
 
 // New URL
@@ -117,8 +117,8 @@ app.post("/urls", (req, res) => {
   urlDatabase[shortURL] = {
     longURL: req.body.longURL,
     shortURL: shortURL,
-    userid: shortURL
-  };
+    userid: req.session.user_id
+  }
   res.redirect(`/urls/${shortURL}`);
 });
     
@@ -156,9 +156,7 @@ app.get("/urls/:id", (req, res) => {
 // Edit URL
 
 app.post("/urls/:id/update", (req, res) => {
-  let databaseID = urlDatabase[req.params.id].userid;
-  let loggedIn = req.session.user_id;
-  if (dataID === loggedIn) {
+  if (req.session.user_id in users) {
     res.redirect("/urls");
   } else {
     res.status(403);
@@ -174,9 +172,7 @@ app.post("/urls/:id/update", (req, res) => {
 // Delete URL
 
 app.post('/urls/:id/delete', (req, res) => {
-  let dataID = urlDatabase[req.params.id].userid;
-  let loggedIn = req.session.user_id;
-  if (dataID === loggedIn) {
+  if (req.session.user_id in users) {
     delete urlDatabase[req.params.id];
     res.redirect("/urls");
   } else {

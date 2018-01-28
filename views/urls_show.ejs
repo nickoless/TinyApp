@@ -6,8 +6,10 @@
     <h1><% include partials/_header.ejs %></h1>
   </head>
   <body>
-    <li><%= longURL %></li>
-    <li><%= `localhost:8080/u/${shortURL}` %></li>
+    <p>
+      <li><%= longURL %></li>
+      <li><%= `http://localhost:8080/u/${shortURL}` %></li>
+    </p>
     <form action="/urls/<%=shortURL%>/update" method="POST" style="margin:25px;">
       <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
       <input type="submit" value="Update">
