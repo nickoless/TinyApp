@@ -1,17 +1,18 @@
 <!DOCTYPE html>
+
 <html lang="en">
-<head>
-  <title>TinyApp</title>
-  <h1><% include partials/_header.ejs %></h1>
-</head>
-<body>
-   <li><%= longURL %></li>
-   <li><%= `localhost:8080/u/${shortURL}` %></li>
-   <form action="/urls/<%=shortURL%>/update" method="POST" style="margin:25px;">
-    <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
-    <input type="submit" value="Update">
-  </form>
-</body>
+  <head>
+    <title>TinyApp</title>
+    <h1><% include partials/_header.ejs %></h1>
+  </head>
+  <body>
+    <li><%= longURL %></li>
+    <li><%= `localhost:8080/u/${shortURL}` %></li>
+    <form action="/urls/<%=shortURL%>/update" method="POST" style="margin:25px;">
+      <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
+      <input type="submit" value="Update">
+    </form>
+  </body>
 </html>
 
 <!-- for (key in urlDabatase ) -->

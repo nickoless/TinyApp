@@ -1,17 +1,15 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-// const cookieParser = require("cookie-parser");
 const cookieSession = require("cookie-session");
-const PORT = process.env.PORT || 8080; //default port 8080
+const PORT = process.env.PORT || 8080;
 const bcrypt = require('bcrypt');
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
-// app.use(cookieParser());
-app.use(cookieSession ({
+app.use(cookieSession({
   name: "session",
-  keys: ["random_key"],
+  keys: ["random_key"]
 }));
 
 // ----------------------------------------
@@ -19,7 +17,6 @@ app.use(cookieSession ({
 function generateRandomString(str) {
   let randomStr = "";
   const char = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
-
   for (let i = 0; i < 6; i++) {
     randomStr += char.charAt(Math.floor(Math.random() * char.length));
   }
@@ -40,7 +37,7 @@ function hashPass(pass) {
 }
 
 function passCheck(user, password) {
-  return bcrypt.compareSync(password, user.password)
+  return bcrypt.compareSync(password, user.password);
 }
 
 // ----------------------------------------
@@ -48,6 +45,7 @@ function passCheck(user, password) {
 const urlDatabase = {
   "b2xVn2": {
     longURL: "http://www.lighthouselabs.ca",
+
     shortURL: "b2xVn2",
     userid: "userRandomID"
   },
@@ -71,33 +69,32 @@ const users = {
   }
 };
 
+// ----------------------------------------
+
 app.get("/", (req, res) => {
   if (req.session.user_id in users) {
     res.redirect("/urls");
   } else {
-  res.redirect("/login");
+    res.redirect("/login");
   }
 });
 
-// URLS
-
-    // Index URL
+// Index URL
 
 app.get("/urls", (req, res) => {
   if (req.session.user_id in users) {
-  let templateVars = {
-    urlDatabase: urlDatabase,
-    users: users,
-    user: req.session.user_id,
-    email: users[req.session.user_id].email
-  };
-  res.render("urls_index", templateVars);
-  } else
-  res.status(401); 
-  res.send("401: Please login")
+    let templateVars = {
+      urlDatabase: urlDatabase,
+      users: users,
+      user: req.session.user_id,
+      email: users[req.session.user_id].email
+    };
+    res.render("urls_index", templateVars);
+  } else { res.status(401); }
+  res.send("401: Please login");
 });
 
-    // New URL
+// New URL
 
 app.get("/urls/new", (req, res) => {
   if (req.session.user_id in users) {
@@ -115,15 +112,15 @@ app.get("/urls/new", (req, res) => {
 
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
-  urlDatabase[shortURL] = { 
+  urlDatabase[shortURL] = {
     longURL: req.body.longURL,
     shortURL: shortURL,
     userid: shortURL
-   };
+  };
   res.redirect(`/urls/${shortURL}`);
 });
     
-    // Redirect URL
+// Redirect URL
 
 app.get("/u/:id", (req, res) => {
   if (req.params.id in urlDatabase) {
@@ -135,62 +132,62 @@ app.get("/u/:id", (req, res) => {
   }
 });
 
-    // Show URL
+// Show URL
     
 app.get("/urls/:id", (req, res) => {
   if (req.session.user_id in users) {
-  let templateVars = {
-    urlDatabase: urlDatabase,
-    users: users,
-    user: req.session.user_id,
-    email: users[req.session.user_id].email,
-    longURL: urlDatabase[req.params.id].longURL,
-    shortURL: req.params.id,
-  }; 
+    let templateVars = {
+      urlDatabase: urlDatabase,
+      users: users,
+      user: req.session.user_id,
+      email: users[req.session.user_id].email,
+      longURL: urlDatabase[req.params.id].longURL,
+      shortURL: req.params.id
+    };
     res.render("urls_show", templateVars);
   } else {
     res.status(401);
     res.send("401: Please login");
   }
-}); 
+});
 
-    // Edit URL
+// Edit URL
 
 app.post("/urls/:id/update", (req, res) => {
-  let databaseID = urlDatabase[req.params.id].userid
+  let databaseID = urlDatabase[req.params.id].userid;
   let loggedIn = req.session.user_id;
   if (dataID === loggedIn) {
     res.redirect("/urls");
   } else {
-    res.status(403)
-    res.send("403: Permission denied")
-  }    
-  let templateVars = { 
+    res.status(403);
+    res.send("403: Permission denied");
+  }
+  let templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id].longURL };
-    urlDatabase[req.params.id].longURL = req.body.longURL;
+  urlDatabase[req.params.id].longURL = req.body.longURL;
   res.redirect("/urls");
 });
 
-    // Delete URL
+// Delete URL
 
 app.post('/urls/:id/delete', (req, res) => {
-  let dataID = urlDatabase[req.params.id].userid
+  let dataID = urlDatabase[req.params.id].userid;
   let loggedIn = req.session.user_id;
   if (dataID === loggedIn) {
     delete urlDatabase[req.params.id];
     res.redirect("/urls");
   } else {
-    res.status(403)
-    res.send("403: Permission denied")
-  }  
+    res.status(403);
+    res.send("403: Permission denied");
+  }
 });
 
 // Login
 
 app.post("login", (req, res) => {
   let name = req.body.users;
-  req.session.user_id = name
+  req.session.user_id = name;
   // res.cookie("user_id", name);
   res.redirect("/urls");
 });
@@ -242,7 +239,7 @@ app.post("/register", (req, res) => {
   }
 });
 
-// Other
+// ----------------------------------------
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
@@ -251,7 +248,3 @@ app.get("/urls.json", (req, res) => {
 app.listen(PORT, () => {
   console.log(`TinyApp listening on port ${PORT}!`);
 });
-
-
-//clear cookie = req session ... user id = null
-// remove res clear cookie
