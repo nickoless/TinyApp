@@ -33,10 +33,12 @@
         <td><%= urlDatabase[key]["longURL"] %></td>   
         <td><a href= "<%= `http://localhost:8080/urls/${key}` %>">Edit</a></td>
         <td><form method="POST" action="/urls/<%=key%>/delete"><button type>Delete</button></form></td>
-        </tr>
+      </tr>
       </table>
       <p><br></p>
-    <a href="http://localhost:8080/urls/new">Shrink URL</a>
+      <form action="/urls/new">
+        <button>Shrink URL</button>
+      </form>
         <% } %>
       <% } %>
     <% }; %>

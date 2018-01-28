@@ -41,8 +41,6 @@ function hashPass(pass) {
 
 function passCheck(user, password) {
   return bcrypt.compareSync(password, user.password)
-  console.log(user.password)
-  console.log(password)
 }
 
 // ----------------------------------------
@@ -78,7 +76,11 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.redirect("/urls");
+  if (req.session.user_id in users) {
+    res.redirect("/urls");
+  } else {
+  res.redirect("/login");
+  }
 });
 
 // URLS
@@ -86,55 +88,69 @@ app.get("/", (req, res) => {
     // Main URLS page
 
 app.get("/urls", (req, res) => {
+  if (req.session.user_id in users) {
   let templateVars = {
     urlDatabase: urlDatabase,
     users: users,
-    user: req.session.user_id
-  }
-    res.render("urls_index", templateVars)
+    user: req.session.user_id,
+    email: users[req.session.user_id].email
+  };
+  res.render("urls_index", templateVars);
+  } else
+  res.status(401); 
+  res.send("401: Please login")
 });
 
     // new URL
 
 app.get("/urls/new", (req, res) => {
   if (req.session.user_id in users) {
-    res.render("urls_new", req.session.user_id);
+    let templateVars = {
+      urlDatabase: urlDatabase,
+      users: users,
+      user: req.session.user_id,
+      email: users[req.session.user_id].email
+    };
+    res.render("urls_new", templateVars);
   } else {
     res.redirect("/login");
   }
 });
 
-        // Add URL to urlDatabase
+    // Add URL to urlDatabase
 
 app.post("/urls", (req, res) => {
-  let shortURL = generat2eRandomString();
+  let shortURL = generateRandomString();
   urlDatabase[shortURL] = { 
     longURL: req.body.longURL,
     shortURL: shortURL,
     userid: shortURL
    };
-   console.log(urlDatabase)
   res.redirect(`/urls/${shortURL}`);
 });
     
     // Short URL redirect
 
-app.get("/tiny/:id", (req, res) => {
-  res.redirect(urlDatabase[req.params.id].longURL);
-});
+// app.get("/:shortURL", (req, res) => {
+//   res.redirect(urlDatabase[req.params.shortURL].longURL);
+// });
 
     // Show URL
     
 app.get("/urls/:id", (req, res) => {
+  if (req.session.user_id in users) {
   let templateVars = {
+    urlDatabase: urlDatabase,
+    users: users,
+    user: req.session.user_id,
+    email: users[req.session.user_id].email,
     longURL: urlDatabase[req.params.id].longURL,
     shortURL: req.params.id,
-    user: urlDatabase["user_id"]
   }; 
-  if (req.session.user_id in users) {
     res.render("urls_show", templateVars);
   } else {
-    res.redirect("/login");
+    res.status(401);
+    res.send("401: Please login");
   }
 }); 
 
@@ -198,8 +214,6 @@ app.post("/login", (req, res) => {
     res.status(403);
     res.send("Incorrect password!");
   }
-  console.log(req.body.password)
-  console.log(user)
 });
 
 // Logout
@@ -230,10 +244,7 @@ app.post("/register", (req, res) => {
       email: req.body.email,
       password: hashPass(req.body.password)
     };
-
-    console.log(users)
     req.session.user_id = newUser;
-    // res.cookie("user_id", newUser);
     res.redirect("/urls");
   }
 });
