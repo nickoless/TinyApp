@@ -90,8 +90,10 @@ app.get("/urls", (req, res) => {
       email: users[req.session.user_id].email
     };
     res.render("urls_index", templateVars);
-  } else { res.status(401); }
-  res.send("401: Please login");
+  } else { 
+    res.status(401);
+    res.send("401: Please login");
+   }   
 });
 
 // New URL
