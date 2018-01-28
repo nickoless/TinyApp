@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const cookieSession = require("cookie-session");
 const PORT = process.env.PORT || 8080; //default port 8080
 const bcrypt = require('bcrypt');
 // const hashedPassword = bcrypt.hashSync(password, 10);
