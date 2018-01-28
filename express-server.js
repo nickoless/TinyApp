@@ -5,7 +5,6 @@ const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
 const PORT = process.env.PORT || 8080; //default port 8080
 const bcrypt = require('bcrypt');
-// const hashedPassword = bcrypt.hashSync(password, 10);
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
@@ -13,7 +12,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession ({
   name: "session",
   keys: ["random_key"],
-  // maxAge: 24 * 6 * 60 * 1000
 }));
 
 // ----------------------------------------
@@ -80,7 +78,7 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.end("Hello!");
+  res.redirect("/urls");
 });
 
 // URLS
@@ -88,21 +86,17 @@ app.get("/", (req, res) => {
     // Main URLS page
 
 app.get("/urls", (req, res) => {
-if (req.session.user_id in users) {
-    res.render("urls_index", { 
+  let templateVars = {
     urlDatabase: urlDatabase,
+    users: users,
     user: req.session.user_id
-  });
-} else {
-  res.send('<script>alert("Please login to continue")</script>')
-}
+  }
+    res.render("urls_index", templateVars)
 });
 
     // new URL
 
 app.get("/urls/new", (req, res) => {
-  // let hasCookie = {
-  //   user: req.cookies.user_id };
   if (req.session.user_id in users) {
     res.render("urls_new", req.session.user_id);
   } else {
@@ -113,7 +107,7 @@ app.get("/urls/new", (req, res) => {
         // Add URL to urlDatabase
 
 app.post("/urls", (req, res) => {
-  let shortURL = generateRandomString();
+  let shortURL = generat2eRandomString();
   urlDatabase[shortURL] = { 
     longURL: req.body.longURL,
     shortURL: shortURL,
@@ -125,7 +119,7 @@ app.post("/urls", (req, res) => {
     
     // Short URL redirect
 
-app.get("/visit/:id", (req, res) => {
+app.get("/tiny/:id", (req, res) => {
   res.redirect(urlDatabase[req.params.id].longURL);
 });
 

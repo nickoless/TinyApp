@@ -1,11 +1,12 @@
 <% if (user) { %>
   <p style = "font-family: arial, sans-serif"><%= `Hello, ${user}` %></p>
-  <form action="/logout" method="POST" style="margin:25px;">
+    <form action="/logout" method="POST" style="margin:25px;">
     <button type="submit" value="Logout">Logout</button>
   </form> 
 <% } else { %>
-  <p style = "font-size:18px">
+  <p style = "font-family: arial, sans-serif; font-size:18px">
     <a href= "<%= `http://localhost:8080/login` %>">Login</a>
-  <a href= "<%= `http://localhost:8080/register` %>">Register</a>
-</p>
+    &nbsp
+    <a href= "<%= `http://localhost:8080/register` %>">Register</a>
+  </p>
 <%  } %>

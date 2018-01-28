@@ -18,37 +18,29 @@
           padding: 8px;
       }
       </style>
-<body>
-
+  <body>
+    <h1>TinyApp</h1>
+    <% if (user) { %>
     <table>
-        <tr>
-          <th>ShortURL</th>
-          <th>LongURL</th>
+      <tr>
+        <th>ShortURL</th>
+        <th>LongURL</th>
+      </tr>
+        <% for (const key in urlDatabase) { %>
+          <% if (urlDatabase[key].userid === user) { %>
+      <tr> 
+        <td><%=urlDatabase[key]["shortURL"]%></td>
+        <td><%= urlDatabase[key]["longURL"] %></td>   
+        <td><a href= "<%= `http://localhost:8080/urls/${key}` %>">Edit</a></td>
+        <td><form method="POST" action="/urls/<%=key%>/delete"><button type>Delete</button></form></td>
         </tr>
-        <% if (user) { %>
-          <% for (const key in urlDatabase) { %>
-            <% if (urlDatabase[key].userid === user) { %>
-        <tr> 
-          <td>
-            <%=urlDatabase[key]["shortURL"]%>
-          </td>
-          <td>
-            <%= urlDatabase[key]["longURL"] %>
-          </td>   
-          <td>
-            <a href= "<%= `http://localhost:8080/urls/${key}` %>">Edit</a>
-          </td>
-          <td>
-            <form method="POST" action="/urls/<%=key%>/delete"><button type>Delete</button></form>
-          </td>
-              <% } %>
-            <% } %>
-          <% }; %>
-          </tr>
       </table>
       <p><br></p>
     <a href="http://localhost:8080/urls/new">Shrink URL</a>
-</body>
+        <% } %>
+      <% } %>
+    <% }; %>
+  </body>
 </html>
 
 <!-- for (key in urlDabatase ) -->
