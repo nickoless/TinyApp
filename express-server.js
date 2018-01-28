@@ -3,6 +3,8 @@ const app = express();
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const PORT = process.env.PORT || 8080; //default port 8080
+const bcrypt = require('bcrypt');
+// const hashedPassword = bcrypt.hashSync(password, 10);
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
@@ -29,8 +31,14 @@ function getUserByEmail(email) {
   }
 }
 
+function hashPass(pass) {
+  return bcrypt.hashSync(pass, 10);
+}
+
 function passCheck(user, password) {
-  return user.password === password;
+  return bcrypt.compareSync(password, user.password)
+  console.log(user.password)
+  console.log(password)
 }
 
 // ----------------------------------------
@@ -52,12 +60,12 @@ const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "a@a",
-    password: "asd"
+    password: bcrypt.hashSync("asd", 10)
   },
   "user2RandomID": {
     id: "user2RandomID",
     email: "b@b",
-    password: "123"
+    password: bcrypt.hashSync("123", 10)
   }
 };
 
@@ -111,8 +119,7 @@ app.post("/urls", (req, res) => {
     
     // Short URL redirect
 
-app.get("/:id", (req, res) => {
-  console.log(urlDatabase[req.params.id].longURL)
+app.get("/visit/:id", (req, res) => {
   res.redirect(urlDatabase[req.params.id].longURL);
 });
 
@@ -130,7 +137,6 @@ app.get("/urls/:id", (req, res) => {
     res.redirect("/login");
   }
 }); 
-
 
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
@@ -191,6 +197,8 @@ app.post("/login", (req, res) => {
     res.status(403);
     res.send("Incorrect password!");
   }
+  console.log(req.body.password)
+  console.log(user)
 });
 
 // Logout
@@ -219,8 +227,10 @@ app.post("/register", (req, res) => {
     users[newUser] = {
       id: newUser,
       email: req.body.email,
-      password: req.body.password
+      password: hashPass(req.body.password)
     };
+
+    console.log(users)
     res.cookie("user_id", newUser);
     res.redirect("/urls");
   }
