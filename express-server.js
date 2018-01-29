@@ -82,18 +82,18 @@ app.get("/", (req, res) => {
 
 app.get("/urls", (req, res) => {
   if (req.session.user_id in users) {
-  let templateVars = {
-    urlDatabase: urlDatabase,
-    users: users,
-    user: req.session.user_id,
-    email: users[req.session.user_id].email
-  };
+    let templateVars = {
+      urlDatabase: urlDatabase,
+      users: users,
+      user: req.session.user_id,
+      email: users[req.session.user_id].email
+    };
     res.render("urls_index", templateVars);
   } else {
     res.render("urls_index", {
       user: req.session.user_id
     });
-   }
+  }
 });
 
 // New URL
@@ -118,7 +118,7 @@ app.post("/urls", (req, res) => {
     longURL: req.body.longURL,
     shortURL: shortURL,
     userid: req.session.user_id
-  }
+  };
   res.redirect(`/urls/${shortURL}`);
 });
     
